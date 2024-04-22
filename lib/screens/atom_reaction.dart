@@ -11,10 +11,39 @@ class _AtomReactionState extends State<AtomReaction> {
   final double _iconSize = 50;
   final (int, int) totalTiles = (8, 8);
   bool gameEnd = false;
+  List<List<int>> world = [];
+
+  @override
+  void initState() {
+    super.initState();
+    generateWorld();
+  }
+
+  void generateWorld() {
+    for (int i = 0; i < totalTiles.$1; i++) {
+      world.add([]);
+      for (int j = 0; j < totalTiles.$2; j++) {
+        world[i].add(0);
+      }
+    }
+  }
 
   void selectTile((int, int) position) {}
 
   void restartGame() {}
+
+  Widget showAtom(int count) {
+    switch (count) {
+      case 1:
+        return _singleAtom();
+      case 2:
+        return _doubleAtom();
+      case 3:
+        return _threeAtom();
+      default:
+        return const SizedBox.shrink();
+    }
+  }
 
   @override
   SafeArea build(BuildContext context) {
@@ -80,20 +109,27 @@ class _AtomReactionState extends State<AtomReaction> {
         ),
       );
 
-  Expanded _tile((int, int) position) => Expanded(
-        child: GestureDetector(
-          onTap: () {
-            selectTile(position);
-          },
-          child: Container(
-            margin: const EdgeInsets.all(2),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-            ),
-            child: const Center(
-              child: Text('a'),
-            ),
+  Expanded _tile((int, int) position) {
+    final count = world[position.$1][position.$2];
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          selectTile(position);
+        },
+        child: Container(
+          margin: const EdgeInsets.all(2),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+          ),
+          child: Center(
+            child: showAtom(count),
           ),
         ),
-      );
+      ),
+    );
+  }
+
+  Widget _singleAtom() => Container();
+  Widget _doubleAtom() => Container();
+  Widget _threeAtom() => Container();
 }
