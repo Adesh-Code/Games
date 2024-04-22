@@ -11,9 +11,10 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.lime.shade50,
-        body: Minesweeper(),
+        body: const Minesweeper(),
       ),
     );
   }

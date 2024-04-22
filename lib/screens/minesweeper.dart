@@ -12,18 +12,19 @@ class Minesweeper extends StatefulWidget {
 class _MinesweeperState extends State<Minesweeper> {
   // width , height
   final (int, int) totalTiles = (10, 10);
+  final double _iconSize = 50;
+  final int numberOfMines = 10;
+  final int distanceForIntialMines = 2;
+
+  bool gameEnd = false;
+  bool firstClick = true;
 
   late List<List<String>> world;
-  bool gameEnd = false;
-  final int numberOfMines = 20;
-  bool firstClick = true;
-  final int distanceForIntialMines = 2;
 
   @override
   void initState() {
     super.initState();
-    generateWorld();
-    unSelectAll();
+    startGame();
   }
 
   void generateWorld() {
@@ -72,7 +73,7 @@ class _MinesweeperState extends State<Minesweeper> {
     for (int i = 0; i < totalTiles.$2; i++) {
       for (int j = 0; j < totalTiles.$1; j++) {
         final val = world[i][j];
-        if (val == 'X') {
+        if (val.contains('X')) {
           if (i + 1 < totalTiles.$2) {
             // right
             world[i + 1][j] = appendValue(world[i + 1][j]);
@@ -109,6 +110,7 @@ class _MinesweeperState extends State<Minesweeper> {
   }
 
   String appendValue(String value) {
+    value = value.replaceAll('|', '');
     switch (value) {
       case '-':
         return '1';
@@ -146,6 +148,9 @@ class _MinesweeperState extends State<Minesweeper> {
       assignDangerLevel();
       unSelectAll();
       firstClick = false;
+      for (var ele in world) {
+        print(ele);
+      }
     }
 
     final bool isSelected =
@@ -160,6 +165,22 @@ class _MinesweeperState extends State<Minesweeper> {
     if (world[tile.$1][tile.$2] == 'X') {
       gameEnd = true;
       gameOverState();
+    }
+
+    bool gameFinished = true;
+    for (var row in world) {
+      final bool notCompleted = row.any((element) =>
+          !(element.contains('-') || element.contains('X')) &&
+          element.contains('|'));
+      if (notCompleted == true) {
+        gameFinished = false;
+        break;
+      }
+    }
+
+    if (gameFinished) {
+      gameEnd = true;
+      gameWonState();
     }
   }
 
@@ -186,7 +207,58 @@ class _MinesweeperState extends State<Minesweeper> {
     }
   }
 
-  void gameOverState() {}
+  void gameOverState() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Game Over'),
+        content: const Text('The game has ended.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              restartGame();
+            },
+            child: const Text('Restart'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void gameWonState() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Game Won'),
+        content: const Text('The game has ended.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              restartGame();
+            },
+            child: const Text('Restart'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void startGame() {
+    generateWorld();
+    unSelectAll();
+  }
+
+  void restartGame() {
+    setState(() {
+      gameEnd = false;
+    });
+    startGame();
+    setState(() {
+      firstClick = true;
+    });
+  }
 
   Color _getColor(String value) {
     switch (value) {
@@ -201,7 +273,13 @@ class _MinesweeperState extends State<Minesweeper> {
       case '4':
         return Colors.red;
       case '5':
-        return Colors.deepPurple;
+        return Colors.indigo;
+      case '6':
+        return Colors.teal;
+      case '7':
+        return Colors.black;
+      case '8':
+        return Colors.black;
       default:
         return Colors.red;
     }
@@ -210,17 +288,46 @@ class _MinesweeperState extends State<Minesweeper> {
   @override
   SafeArea build(BuildContext context) {
     return SafeArea(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(32),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.width - 64,
-              child: _rootWidget(),
+          Positioned(
+            left: (MediaQuery.of(context).size.width / 2) - (_iconSize / 2),
+            top: MediaQuery.of(context).size.height / 15,
+            child: gameEnd
+                ? SizedBox(
+                    child: IconButton(
+                      iconSize: _iconSize,
+                      icon: const Icon(Icons.replay_rounded),
+                      onPressed: restartGame,
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+          const Positioned.fill(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Text(
+                'Minesweeper',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                    fontFamily: 'Arial'),
+              ),
             ),
           ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(32),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.width - 64,
+                  child: _rootWidget(),
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );
