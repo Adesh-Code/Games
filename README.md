@@ -1,3 +1,3 @@
-# minesweeper
+# game
 
 A new Flutter project.

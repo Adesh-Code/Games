@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "minesweeper",
+            "name": "game",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "minesweeper (profile mode)",
+            "name": "game (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "minesweeper (release mode)",
+            "name": "game (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
