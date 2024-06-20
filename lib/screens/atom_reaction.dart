@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum TilePos { center, side, corner }
+
 class AtomReaction extends StatefulWidget {
   const AtomReaction({super.key});
 
@@ -28,7 +30,85 @@ class _AtomReactionState extends State<AtomReaction> {
     }
   }
 
-  void selectTile((int, int) position) {}
+  void _selectTile((int, int) position) {
+    switch (world[position.$1][position.$2]) {
+      case 0:
+        world[position.$1][position.$2] = 1;
+      case 1:
+        switch (_getTilePos(position)) {
+          case TilePos.center:
+          case TilePos.side:
+            world[position.$1][position.$2] = 2;
+            break;
+          case TilePos.corner:
+            _blastAtom(position);
+            break;
+        }
+        break;
+      case 2:
+        switch (_getTilePos(position)) {
+          case TilePos.center:
+            world[position.$1][position.$2] = 3;
+          case TilePos.side:
+            _blastAtom(position);
+            break;
+          case TilePos.corner:
+            break;
+        }
+        break;
+      case 3:
+        _blastAtom(position);
+        break;
+    }
+    setState(() {});
+  }
+
+  _blastAtom((int, int) position) {
+    world[position.$1][position.$2] = 0;
+    // TOP
+    if (_checkInBounds((position.$1 - 1, position.$2))) {
+      _selectTile((position.$1 - 1, position.$2));
+    }
+    // BOTTOM
+    if (_checkInBounds((position.$1 + 1, position.$2))) {
+      _selectTile((position.$1 + 1, position.$2));
+    }
+    // RIGHT
+    if (_checkInBounds((position.$1, position.$2 + 1))) {
+      _selectTile((position.$1, position.$2 + 1));
+    }
+    // LEFT
+    if (_checkInBounds((position.$1, position.$2 - 1))) {
+      _selectTile((position.$1, position.$2 - 1));
+    }
+  }
+
+  bool _checkInBounds((int, int) position) {
+    if (position.$1 < 0 || position.$2 < 0) {
+      return false;
+    }
+    if (position.$1 > totalTiles.$1 - 1 || position.$2 > totalTiles.$2 - 1) {
+      return false;
+    }
+    return true;
+  }
+
+  TilePos _getTilePos((int, int) position) {
+    if (position.$1 == 0) {
+      if (position.$2 == 0 || position.$2 == (totalTiles.$2 - 1)) {
+        return TilePos.corner;
+      }
+      return TilePos.side;
+    }
+
+    if (position.$1 == (totalTiles.$1 - 1)) {
+      if (position.$2 == 0 || position.$2 == (totalTiles.$2 - 1)) {
+        return TilePos.corner;
+      }
+      return TilePos.side;
+    }
+    return TilePos.center;
+  }
 
   void restartGame() {}
 
@@ -46,49 +126,51 @@ class _AtomReactionState extends State<AtomReaction> {
   }
 
   @override
-  SafeArea build(BuildContext context) {
-    return SafeArea(
-      child: Stack(
-        children: [
-          Positioned(
-            left: (MediaQuery.of(context).size.width / 2) - (_iconSize / 2),
-            top: MediaQuery.of(context).size.height / 15,
-            child: gameEnd
-                ? SizedBox(
-                    child: IconButton(
-                      iconSize: _iconSize,
-                      icon: const Icon(Icons.replay_rounded),
-                      onPressed: restartGame,
-                    ),
-                  )
-                : const SizedBox.shrink(),
-          ),
-          const Positioned.fill(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Text(
-                'Minesweeper',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30,
-                    fontFamily: 'Arial'),
-              ),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Positioned(
+              left: (MediaQuery.of(context).size.width / 2) - (_iconSize / 2),
+              top: MediaQuery.of(context).size.height / 15,
+              child: gameEnd
+                  ? SizedBox(
+                      child: IconButton(
+                        iconSize: _iconSize,
+                        icon: const Icon(Icons.replay_rounded),
+                        onPressed: restartGame,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(32),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.width - 64,
-                  child: _rootWidget(),
+            const Positioned.fill(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Text(
+                  'Atom Reaction',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30,
+                      fontFamily: 'Arial'),
                 ),
               ),
-            ],
-          )
-        ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.width - 64,
+                    child: _rootWidget(),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -114,7 +196,7 @@ class _AtomReactionState extends State<AtomReaction> {
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          selectTile(position);
+          _selectTile(position);
         },
         child: Container(
           margin: const EdgeInsets.all(2),
@@ -129,7 +211,66 @@ class _AtomReactionState extends State<AtomReaction> {
     );
   }
 
-  Widget _singleAtom() => Container();
-  Widget _doubleAtom() => Container();
-  Widget _threeAtom() => Container();
+  Widget _singleAtom() => Container(
+        decoration:
+            const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+        width: 20,
+      );
+
+  Widget _doubleAtom() => SizedBox(
+        width: 30,
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                decoration: const BoxDecoration(
+                    color: Colors.red, shape: BoxShape.circle),
+                width: 20,
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                decoration: const BoxDecoration(
+                    color: Colors.red, shape: BoxShape.circle),
+                width: 20,
+              ),
+            ),
+          ],
+        ),
+      );
+
+  Widget _threeAtom() => SizedBox(
+        width: 30,
+        height: 30,
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                decoration: const BoxDecoration(
+                    color: Colors.red, shape: BoxShape.circle),
+                width: 20,
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                decoration: const BoxDecoration(
+                    color: Colors.red, shape: BoxShape.circle),
+                width: 20,
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                decoration: const BoxDecoration(
+                    color: Colors.red, shape: BoxShape.circle),
+                height: 20,
+              ),
+            ),
+          ],
+        ),
+      );
 }

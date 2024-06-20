@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:game/screens/atom_reaction.dart';
+
+import 'screens/atom_reaction.dart';
+import 'screens/main_screen.dart';
+import 'screens/minesweeper.dart';
 
 void main() {
   runApp(const MainApp());
@@ -12,10 +15,11 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Colors.lime.shade50,
-        body: const AtomReaction(),
-      ),
+      routes: {
+        '/': (BuildContext context) => const MainScreen(),
+        'mine': (BuildContext context) => const Minesweeper(),
+        'atom': (BuildContext context) => const AtomReaction(),
+      },
     );
   }
 }

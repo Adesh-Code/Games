@@ -148,9 +148,9 @@ class _MinesweeperState extends State<Minesweeper> {
       assignDangerLevel();
       unSelectAll();
       firstClick = false;
-      for (var ele in world) {
-        print(ele);
-      }
+      // for (var ele in world) {
+      //   print(ele);
+      // }
     }
 
     final bool isSelected =
@@ -286,49 +286,51 @@ class _MinesweeperState extends State<Minesweeper> {
   }
 
   @override
-  SafeArea build(BuildContext context) {
-    return SafeArea(
-      child: Stack(
-        children: [
-          Positioned(
-            left: (MediaQuery.of(context).size.width / 2) - (_iconSize / 2),
-            top: MediaQuery.of(context).size.height / 15,
-            child: gameEnd
-                ? SizedBox(
-                    child: IconButton(
-                      iconSize: _iconSize,
-                      icon: const Icon(Icons.replay_rounded),
-                      onPressed: restartGame,
-                    ),
-                  )
-                : const SizedBox.shrink(),
-          ),
-          const Positioned.fill(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Text(
-                'Minesweeper',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30,
-                    fontFamily: 'Arial'),
-              ),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Positioned(
+              left: (MediaQuery.of(context).size.width / 2) - (_iconSize / 2),
+              top: MediaQuery.of(context).size.height / 15,
+              child: gameEnd
+                  ? SizedBox(
+                      child: IconButton(
+                        iconSize: _iconSize,
+                        icon: const Icon(Icons.replay_rounded),
+                        onPressed: restartGame,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(32),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.width - 64,
-                  child: _rootWidget(),
+            const Positioned.fill(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Text(
+                  'Minesweeper',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30,
+                      fontFamily: 'Arial'),
                 ),
               ),
-            ],
-          )
-        ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.width - 64,
+                    child: _rootWidget(),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
