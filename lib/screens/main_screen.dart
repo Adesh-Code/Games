@@ -14,6 +14,7 @@ class MainScreen extends StatelessWidget {
   }
 
   Column _rootWidget(BuildContext context) => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           GestureDetector(
             onTap: () {
@@ -29,6 +30,9 @@ class MainScreen extends StatelessWidget {
                 Icon(Icons.sports_esports_rounded),
               ],
             ),
+          ),
+          const SizedBox(
+            height: 10,
           ),
           GestureDetector(
             onTap: () {
