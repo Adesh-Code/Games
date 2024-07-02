@@ -18,8 +18,8 @@ class _ClickerScreenState extends State<ClickerScreen> {
   // Level
   int _level = 1;
 
-  final double _healthMultiplier = 1.2;
-  final double _coinBonusMultiplier = 1.1;
+  final double _healthMultiplier = 2.5;
+  final double _coinBonusMultiplier = 1.3;
 
   // Market
   int _damageLevel = 1;
@@ -152,8 +152,9 @@ class _ClickerScreenState extends State<ClickerScreen> {
     final int damagePrice =
         ((_damageLevel * _buyMoneyMultiplier) + (_buyMoney * _damageLevel))
             .toInt();
-    final int coinPrice =
-        ((_coinLevel * _buyMoneyMultiplier) + (_buyMoney * _coinLevel)).toInt();
+    final int coinPrice = ((_coinLevel * _buyMoneyMultiplier) +
+            (_buyMoney * _buyMoneyMultiplier * _coinLevel))
+        .toInt();
     return Column(
       children: [
         ListTile(
