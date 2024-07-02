@@ -50,6 +50,25 @@ class MainScreen extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(
+            height: 10,
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.of(context).pushNamed('clicker');
+            },
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Text(
+                  'Clicker',
+                  style: TextStyle(fontSize: 30),
+                ),
+                Icon(Icons.lightbulb_circle_sharp),
+              ],
+            ),
+          ),
         ],
       );
 }
