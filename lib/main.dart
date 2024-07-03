@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:game/screens/sudoku_screen.dart';
 
 import 'screens/atom_reaction.dart';
 import 'screens/clicker_screen.dart';
@@ -21,6 +22,7 @@ class MainApp extends StatelessWidget {
         'mine': (BuildContext context) => const Minesweeper(),
         'atom': (BuildContext context) => const AtomReaction(),
         'clicker': (BuildContext context) => const ClickerScreen(),
+        'sudoku': (BuildContext context) => const SudokuScreen()
       },
     );
   }

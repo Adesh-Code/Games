@@ -4,7 +4,7 @@ class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Scaffold build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.deepOrange.shade100,
       body: SafeArea(
@@ -27,6 +27,9 @@ class MainScreen extends StatelessWidget {
                   'Minesweeper',
                   style: TextStyle(fontSize: 30),
                 ),
+                SizedBox(
+                  width: 10,
+                ),
                 Icon(Icons.sports_esports_rounded),
               ],
             ),
@@ -45,6 +48,9 @@ class MainScreen extends StatelessWidget {
                 Text(
                   'Atom Reaction',
                   style: TextStyle(fontSize: 30),
+                ),
+                SizedBox(
+                  width: 10,
                 ),
                 Icon(Icons.lightbulb_circle_sharp),
               ],
@@ -65,7 +71,32 @@ class MainScreen extends StatelessWidget {
                   'Clicker',
                   style: TextStyle(fontSize: 30),
                 ),
-                Icon(Icons.lightbulb_circle_sharp),
+                SizedBox(
+                  width: 10,
+                ),
+                Icon(Icons.ads_click_sharp),
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.of(context).pushNamed('sudoku');
+            },
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Text(
+                  'Sudoku',
+                  style: TextStyle(fontSize: 30),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Icon(Icons.crop_free_sharp),
               ],
             ),
           ),
