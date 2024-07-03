@@ -11,10 +11,10 @@ class SudokuScreen extends StatefulWidget {
 
 class _SudokuScreenState extends State<SudokuScreen> {
   final int worldSize = 9;
-  final int emptySpaces = 20;
+  final int emptySpaces = 40;
+  final List<(int, int)> _hintLocations = [];
 
   List<List<String>> world = [];
-  List<(int, int)> _hintLocations = [];
   bool endGame = false;
 
   bool get allBoxesFilled =>
@@ -244,7 +244,7 @@ class _SudokuScreenState extends State<SudokuScreen> {
   }
 
   void _onClick((int, int) position) {
-    if (endGame) {
+    if (endGame || world[position.$1][position.$2].contains('*')) {
       return;
     }
     world[position.$1][position.$2] =
@@ -266,6 +266,9 @@ class _SudokuScreenState extends State<SudokuScreen> {
     if (!allBoxesFilled) {
       return;
     }
+
+    _hintLocations.clear(); // Clear previous hint locations
+
     for (int i = 0; i < 9; i++) {
       Set<int> rowSet = {};
       Set<int> colSet = {};
@@ -278,23 +281,27 @@ class _SudokuScreenState extends State<SudokuScreen> {
 
         // Check row
         if (rowNum < 1 || rowNum > 9 || !rowSet.add(rowNum)) {
-          _hintLocations.add((rowNum, colNum));
+          _hintLocations.add(
+              (i, j)); // Add the location of the incorrect entry in the row
         }
         // Check column
         if (colNum < 1 || colNum > 9 || !colSet.add(colNum)) {
-          _hintLocations.add((rowNum, colNum));
+          _hintLocations.add(
+              (j, i)); // Add the location of the incorrect entry in the column
         }
         // Check 3x3 subgrid
         int rowIndex = (i ~/ 3) * 3 + j ~/ 3;
         int colIndex = (i % 3) * 3 + j % 3;
         int boxNum = _getInteger(world[rowIndex][colIndex]);
         if (boxNum < 1 || boxNum > 9 || !boxSet.add(boxNum)) {
-          _hintLocations.add((rowNum, colNum));
+          _hintLocations.add((
+            rowIndex,
+            colIndex
+          )); // Add the location of the incorrect entry in the box
         }
       }
     }
     setState(() {});
-    return;
   }
 
   void _endGame() {
@@ -334,14 +341,14 @@ class _SudokuScreenState extends State<SudokuScreen> {
                     IconButton(
                       onPressed: () async {
                         _getHint();
-                        await Future.delayed(const Duration(seconds: 1));
+                        await Future.delayed(const Duration(milliseconds: 600));
                         setState(() {
                           _hintLocations.clear();
                         });
                       },
                       icon: const Icon(Icons.lightbulb),
                     ),
-                    const Text('Know which one are wrong')
+                    const Text('Know which ones are wrong')
                   ],
                 ),
           Padding(
@@ -383,13 +390,13 @@ class _SudokuScreenState extends State<SudokuScreen> {
           _onClick(position);
         },
         child: AnimatedContainer(
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           padding: const EdgeInsets.all(2),
           decoration: BoxDecoration(
             color: value.contains('*')
                 ? Colors.grey
                 : _hintLocations.contains(position)
-                    ? Colors.red
+                    ? Colors.red.shade400.withOpacity(0.7)
                     : Colors.transparent,
             border: Border(
               top: BorderSide(
